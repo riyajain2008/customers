@@ -65,3 +65,14 @@ Copyright (c) 2016, 2024 [John Rofrano](https://www.linkedin.com/in/JohnRofrano/
 Licensed under the Apache License. See [LICENSE](LICENSE)
 
 This repository is part of the New York University (NYU) masters class: **CSCI-GA.2820-001 DevOps and Agile Methodologies** created and taught by [John Rofrano](https://cs.nyu.edu/~rofrano/), Adjunct Instructor, NYU Courant Institute, Graduate Division, Computer Science, and NYU Stern School of Business.
+
+# Customer team
+
+## Code Standard
+- use snake_case, like `this_is_snake_case_variable`.
+- always keep code formatted, VSCode extension `Prettier` is recommended.
+
+## Workflow
+- Before working on a story, check if there are any stories in 'Review/QA'. If so, find the corresponding pull request and test it yourself. If everything works well, move the story to the 'Done' section
+- When you work on a story, always select the top story from the 'sprint backlog' without dependency on in progress stories, drag it into 'In Progress', and assign it to yourself. Pull the latest code from GitHub, create a new branch, and write your code on that branch.
+- When you finish working on a story, commit your branch to GitHub, create a new pull request, and link it to the corresponding story. Then, drag it into 'Review/QA'.
