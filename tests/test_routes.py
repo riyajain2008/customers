@@ -113,6 +113,14 @@ class TestYourResourceService(TestCase):
         self.assertEqual(new_customer["address"], test_customer.address)
         self.assertEqual(new_customer["phone_number"], test_customer.phone_number)
 
+        response = self.client.get(location)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        new_customer = response.get_json()
+        self.assertEqual(new_customer["name"], test_customer.name)
+        self.assertEqual(new_customer["email"], test_customer.email)
+        self.assertEqual(new_customer["address"], test_customer.address)
+        self.assertEqual(new_customer["phone_number"], test_customer.phone_number)
+
     def test_get_customer_list(self):
         """It should Get a list of Customers"""
         self._create_customers(5)
@@ -121,14 +129,19 @@ class TestYourResourceService(TestCase):
         data = response.get_json()
         self.assertEqual(len(data), 5)
 
-        # Check that the location header was correct
-        # TODO: uncomment these code after implementing get_customers
-        """
-        response = self.client.get(location)
+    def test_get_customer(self):
+        """It should Get a single Customer"""
+        # get the id of a customer
+        test_customer = self._create_customers(1)[0]
+        response = self.client.get(f"{BASE_URL}/{test_customer.id}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        new_customer = response.get_json()
-        self.assertEqual(new_customer["name"], test_customer.name)
-        self.assertEqual(new_customer["category"], test_customer.category)
-        self.assertEqual(new_customer["available"], test_customer.available)
-        self.assertEqual(new_customer["gender"], test_customer.gender.name)
-        """
+        data = response.get_json()
+        self.assertEqual(data["name"], test_customer.name)
+
+    def test_get_customer_not_found(self):
+        """It should not Get a Customer thats not found"""
+        response = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
