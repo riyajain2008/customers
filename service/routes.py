@@ -125,8 +125,8 @@ def create_customers():
 
     # Return the location of the new Customer
     # TODO: uncomment this line after implementing get_customers
-    # location_url = url_for("get_customers", customer_id=customer.id, _external=True)
-    location_url = "url_for_get_customers"
+    location_url = url_for("get_customers", customer_id=customer.id, _external=True)
+    # location_url = "url_for_get_customers"
     return (
         jsonify(customer.serialize()),
         status.HTTP_201_CREATED,

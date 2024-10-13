@@ -113,6 +113,14 @@ class TestYourResourceService(TestCase):
         self.assertEqual(new_customer["address"], test_customer.address)
         self.assertEqual(new_customer["phone_number"], test_customer.phone_number)
 
+        response = self.client.get(location)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        new_customer = response.get_json()
+        self.assertEqual(new_customer["name"], test_customer.name)
+        self.assertEqual(new_customer["email"], test_customer.email)
+        self.assertEqual(new_customer["address"], test_customer.address)
+        self.assertEqual(new_customer["phone_number"], test_customer.phone_number)
+
     def test_get_customer_list(self):
         """It should Get a list of Customers"""
         self._create_customers(5)
@@ -137,15 +145,3 @@ class TestYourResourceService(TestCase):
         data = response.get_json()
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
-
-        # Check that the location header was correct
-        # TODO: uncomment these code after implementing get_customers
-        """
-        response = self.client.get(location)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        new_customer = response.get_json()
-        self.assertEqual(new_customer["name"], test_customer.name)
-        self.assertEqual(new_customer["category"], test_customer.category)
-        self.assertEqual(new_customer["available"], test_customer.available)
-        self.assertEqual(new_customer["gender"], test_customer.gender.name)
-        """
