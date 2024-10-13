@@ -30,7 +30,7 @@ class Customer(db.Model):
     email = db.Column(
         db.String(255), nullable=False, unique=True
     )  # email, must be unique
-    phone_number = db.Column(db.String(20), nullable=False)  # phone number
+    phone_number = db.Column(db.String(50), nullable=False)  # phone number
     address = db.Column(db.String(255), nullable=True)  # address, could be null
 
     def __repr__(self):
