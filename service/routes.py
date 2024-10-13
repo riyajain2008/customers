@@ -40,6 +40,45 @@ def index():
 
 
 ######################################################################
+# LIST ALL PETS
+######################################################################
+@app.route("/customers", methods=["GET"])
+def list_customers():
+    """Returns all of the Customers"""
+    app.logger.info("Request for customer list")
+
+    customers = []
+
+    # Parse any arguments from the query string
+    # category = request.args.get("category")
+    name = request.args.get("name")
+    email = request.args.get("email")
+    phone_number = request.args.get("phone_number")
+    address = request.args.get("address")
+
+    if name:
+        app.logger.info("Find by name: %s", name)
+        customers = Customer.find_by_name(name)
+    elif email:
+        app.logger.info("Find by email: %s", email)
+        customers = Customer.find(email)
+    elif phone_number:
+        app.logger.info("Find by phone_number: %s", phone_number)
+        # create enum from string
+        customers = Customer.find(phone_number)
+    elif address:
+        app.logger.info("Find by address: %s", address)
+        customers = Customer.find(address)
+    else:
+        app.logger.info("Find all")
+        customers = Customer.all()
+
+    results = [customer.serialize() for customer in customers]
+    app.logger.info("Returning %d customers", len(results))
+    return jsonify(results), status.HTTP_200_OK
+
+
+######################################################################
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 

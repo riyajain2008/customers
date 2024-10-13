@@ -75,6 +75,22 @@ class TestYourResourceService(TestCase):
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
+    def _create_customers(self, count: int = 1) -> list:
+        """Factory method to create customers in bulk"""
+        customers = []
+        for _ in range(count):
+            test_customer = CustomerFactory()
+            response = self.client.post(BASE_URL, json=test_customer.serialize())
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_201_CREATED,
+                "Could not create test customer",
+            )
+            new_customer = response.get_json()
+            test_customer.id = new_customer["id"]
+            customers.append(test_customer)
+        return customers
+
     # Todo: Add your test cases here...
     # ----------------------------------------------------------
     # TEST CREATE
@@ -96,6 +112,14 @@ class TestYourResourceService(TestCase):
         self.assertEqual(new_customer["email"], test_customer.email)
         self.assertEqual(new_customer["address"], test_customer.address)
         self.assertEqual(new_customer["phone_number"], test_customer.phone_number)
+
+    def test_get_customer_list(self):
+        """It should Get a list of Customers"""
+        self._create_customers(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
 
         # Check that the location header was correct
         # TODO: uncomment these code after implementing get_customers
