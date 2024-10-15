@@ -78,8 +78,6 @@ class TestCustomer(TestCase):
         self.assertEqual(data.email, resource.email)
         self.assertEqual(data.address, resource.address)
 
-    # Todo: Add your test cases here...
-
     def test_list_all_customers(self):
         """It should List all Customers in the database"""
         customers = Customer.all()
