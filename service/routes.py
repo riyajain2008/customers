@@ -52,6 +52,10 @@ def index():
                     "method": "POST",
                     "url": url_for("create_customers", _external=True),
                 },
+                "update_customer": {
+                    "method": "PUT",
+                    "url": url_for("update_customers", customer_id=1, _external=True),
+                },
             },
         ),
         status.HTTP_200_OK,
@@ -152,6 +156,31 @@ def create_customers():
         {"Location": location_url},
     )
 
+
+@app.route("/customers/<int:customer_id>", methods=["PUT"])
+def update_customers(customer_id):
+    """
+    Update a Customer
+    This endpoint will update a Customer based the body that is posted
+    """
+    app.logger.info("Request to Update a customer with id [%s]", customer_id)
+    check_content_type("application/json")
+
+    customer = Customer.find(customer_id)
+    if not customer:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Customer with id '{customer_id}' was not found.",
+        )
+
+    data = request.get_json()
+    app.logger.info("Processing: %s", data)
+    customer.deserialize(data)
+
+    customer.update()
+    app.logger.info("Customer with id [%s] updated!", customer.id)
+    return jsonify(customer.serialize()), status.HTTP_200_OK    
+        
 
 def check_content_type(content_type) -> None:
     """Checks that the media type is correct"""

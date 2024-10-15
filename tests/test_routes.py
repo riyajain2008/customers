@@ -147,3 +147,24 @@ class TestYourResourceService(TestCase):
         data = response.get_json()
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
+
+    def test_update_customer(self):
+        """It should Update an existing Customer"""
+        # create a customer to update
+        test_customer = CustomerFactory()
+        response = self.client.post(BASE_URL, json=test_customer.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # update the customer
+        new_customer = response.get_json()
+        new_customer["name"] = "Updated Name"
+        new_customer["email"] = "updated_email@example.com"
+        new_customer["phone_number"] = "123-456-7890"
+        new_customer["address"] = "123 Updated Address"
+        response = self.client.put(f"{BASE_URL}/{new_customer['id']}", json=new_customer)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_customer = response.get_json()
+        self.assertEqual(updated_customer["name"], "Updated Name")
+        self.assertEqual(updated_customer["email"], "updated_email@example.com")
+        self.assertEqual(updated_customer["phone_number"], "123-456-7890")
+        self.assertEqual(updated_customer["address"], "123 Updated Address")
