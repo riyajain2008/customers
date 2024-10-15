@@ -38,7 +38,10 @@ def index():
         jsonify(
             name="Customer REST API Service",
             version="1.0",
-            description="This is a RESTful service for managing customers. You can list, view, create, update, and delete customer information.",
+            description=(
+                "This is a RESTful service for managing customers. You can list, view, "
+                "create, update, and delete customer information."
+            ),
             paths={
                 "list_customers": {
                     "method": "GET",
@@ -63,8 +66,38 @@ def index():
 
 
 ######################################################################
-# LIST ALL PETS
+#  R E S T   A P I   E N D P O I N T S
 ######################################################################
+
+
+@app.route("/customers", methods=["POST"])
+def create_customers():
+    """
+    Create a Customer
+    This endpoint will create a Customer based the data in the body that is posted
+    """
+    app.logger.info("Request to Create a Customer...")
+    check_content_type("application/json")
+
+    customer = Customer()
+    # Get the data from the request and deserialize it
+    data = request.get_json()
+    app.logger.info("Processing: %s", data)
+    customer.deserialize(data)
+
+    # Save the new Customer to the database
+    customer.create()
+    app.logger.info("Customer with new id [%s] saved!", customer.id)
+
+    # Return the location of the new Customer
+    location_url = url_for("get_customers", customer_id=customer.id, _external=True)
+    return (
+        jsonify(customer.serialize()),
+        status.HTTP_201_CREATED,
+        {"Location": location_url},
+    )
+
+
 @app.route("/customers", methods=["GET"])
 def list_customers():
     """Returns all of the Customers"""
@@ -72,8 +105,6 @@ def list_customers():
 
     customers = []
 
-    # Parse any arguments from the query string
-    # category = request.args.get("category")
     name = request.args.get("name")
     email = request.args.get("email")
     phone_number = request.args.get("phone_number")
@@ -84,14 +115,14 @@ def list_customers():
         customers = Customer.find_by_name(name)
     elif email:
         app.logger.info("Find by email: %s", email)
-        customers = Customer.find(email)
+        customers = Customer.find_by_email(email)
     elif phone_number:
         app.logger.info("Find by phone_number: %s", phone_number)
         # create enum from string
-        customers = Customer.find(phone_number)
+        customers = Customer.find_by_phone_number(phone_number)
     elif address:
         app.logger.info("Find by address: %s", address)
-        customers = Customer.find(address)
+        customers = Customer.find_by_address(address)
     else:
         app.logger.info("Find all")
         customers = Customer.all()
@@ -123,40 +154,13 @@ def get_customers(customer_id):
 
 
 ######################################################################
-#  R E S T   A P I   E N D P O I N T S
+# CREATE A NEW PET
 ######################################################################
 
 
-@app.route("/customers", methods=["POST"])
-def create_customers():
-    """
-    Create a Customer
-    This endpoint will create a Customer based the data in the body that is posted
-    """
-    app.logger.info("Request to Create a Customer...")
-    check_content_type("application/json")
-
-    customer = Customer()
-    # Get the data from the request and deserialize it
-    data = request.get_json()
-    app.logger.info("Processing: %s", data)
-    customer.deserialize(data)
-
-    # Save the new Customer to the database
-    customer.create()
-    app.logger.info("Customer with new id [%s] saved!", customer.id)
-
-    # Return the location of the new Customer
-    # TODO: uncomment this line after implementing get_customers
-    location_url = url_for("get_customers", customer_id=customer.id, _external=True)
-    # location_url = "url_for_get_customers"
-    return (
-        jsonify(customer.serialize()),
-        status.HTTP_201_CREATED,
-        {"Location": location_url},
-    )
-
-
+######################################################################
+# UPDATE AN EXISTING PET
+######################################################################
 @app.route("/customers/<int:customer_id>", methods=["PUT"])
 def update_customers(customer_id):
     """
@@ -179,8 +183,8 @@ def update_customers(customer_id):
 
     customer.update()
     app.logger.info("Customer with id [%s] updated!", customer.id)
-    return jsonify(customer.serialize()), status.HTTP_200_OK    
-        
+    return jsonify(customer.serialize()), status.HTTP_200_OK
+
 
 def check_content_type(content_type) -> None:
     """Checks that the media type is correct"""
