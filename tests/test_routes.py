@@ -72,8 +72,10 @@ class TestYourResourceService(TestCase):
 
     def test_index(self):
         """It should call the home page"""
-        resp = self.client.get("/")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data["name"], "Customer REST API Service")
 
     def _create_customers(self, count: int = 1) -> list:
         """Factory method to create customers in bulk"""

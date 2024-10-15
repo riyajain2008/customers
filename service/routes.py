@@ -52,14 +52,6 @@ def index():
                     "method": "POST",
                     "url": url_for("create_customers", _external=True),
                 },
-                "update_customer": {
-                    "method": "PUT",
-                    "url": url_for("update_customer", customer_id=1, _external=True),
-                },
-                "delete_customer": {
-                    "method": "DELETE",
-                    "url": url_for("delete_customer", customer_id=1, _external=True),
-                },
             },
         ),
         status.HTTP_200_OK,

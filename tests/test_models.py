@@ -25,6 +25,7 @@ from unittest import TestCase
 from wsgi import app
 from service.models import Customer, DataValidationError, db
 from .factories import CustomerFactory
+from service.common import status
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
@@ -64,6 +65,7 @@ class TestCustomer(TestCase):
     ######################################################################
     #  T E S T   C A S E S
     ######################################################################
+
 
     def test_create_customer_model(self):
         """It should create a Customer"""
