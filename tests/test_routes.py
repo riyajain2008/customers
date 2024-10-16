@@ -145,3 +145,45 @@ class TestYourResourceService(TestCase):
         data = response.get_json()
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
+
+    def test_delete_customer(self):
+        """It should Delete a customer"""
+        test_customer = self._create_customers(1)[0]
+        response = self.client.delete(f"{BASE_URL}/{test_customer.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(response.data), 0)
+        # make sure they are deleted
+        response = self.client.get(f"{BASE_URL}/{test_customer.id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_non_existing_customer(self):
+        """It should return 404 when trying to delete a non-existing customer"""
+        response = self.client.delete(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn("Customer with id '0' was not found", response.data.decode())
+
+    def test_delete_last_customer(self):
+        """It should delete the last customer and the database should be empty"""
+        test_customer = self._create_customers(1)[0]
+
+        # Delete the last customer
+        response = self.client.delete(f"{BASE_URL}/{test_customer.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Make sure that database is empty
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 0)
+
+    # Uncomment this code after solve the problem in logging
+    # def test_delete_customer_with_logging(self):
+    #     """It should delete a customer and log the event"""
+    #     test_customer = self._create_customers(1)[0]
+
+    #     with self.assertLogs('flask.app', level='INFO') as log:
+    #         response = self.client.delete(f"{BASE_URL}/{test_customer.id}")
+    #         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    #         # make sure log takes correct information
+    #         self.assertIn(f"Customer with ID: {test_customer.id} deleted.", log.output)

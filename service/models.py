@@ -133,3 +133,12 @@ class Customer(db.Model):
         """
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
+
+    # Uncomment this code when last_active is updated in model in sprint2
+    # @classmethod
+    # def find_inactive_customers(cls, inactive_period):
+    #     """
+    #     find all customers with inactive days more than inactive_period
+    #     """
+    #     threshold = datetime.utcnow() - inactive_period
+    #     return cls.query.filter(cls.last_active < threshold).all()

@@ -40,7 +40,7 @@ def index():
 
 
 ######################################################################
-# LIST ALL PETS
+# LIST ALL customerS
 ######################################################################
 @app.route("/customers", methods=["GET"])
 def list_customers():
@@ -151,3 +151,54 @@ def check_content_type(content_type) -> None:
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         f"Content-Type must be {content_type}",
     )
+
+
+######################################################################
+# DELETE A CUSTOMER
+######################################################################
+
+
+@app.route("/customers/<int:customer_id>", methods=["DELETE"])
+def delete_customer(customer_id):
+    """
+    Delete a customer
+
+    This endpoint will delete a customer based the id specified in the path
+    """
+    app.logger.info("Request to Delete a customer with id [%s]", customer_id)
+
+    # Delete the customer if it exists
+    customer = Customer.find(customer_id)
+    if customer:
+        app.logger.info("Customer with ID: %d found.", customer.id)
+        customer.delete()
+        app.logger.info("Customer with ID: %d deleted.", customer.id)
+        return {}, status.HTTP_204_NO_CONTENT
+    else:
+        app.logger.info("Customer with ID: %d not found.", customer_id)
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Customer with id '{customer_id}' was not found.",
+        )
+
+
+# Todo: Uncomment this code when last_active has been updated in model in sprint2
+# @app.route("/customers/inactive", methods=["DELETE"])
+# def delete_inactive_customers():
+#     """
+#     Delete the customer with inactive_period more than 360 days
+#     """
+#     inactive_period = timedelta(days=360)
+#     customers = Customer.find_inactive_customers(inactive_period)
+
+#     if not customers:
+#         abort(status.HTTP_404_NOT_FOUND, "No inactive customers found.")
+
+#     for customer in customers:
+#         customer.delete()
+#         app.logger.info(f"Customer with ID {customer.id} deleted due to inactivity.")
+
+#     return (
+#         jsonify({"message": f"{len(customers)} customers deleted."}),
+#         status.HTTP_200_OK,
+#     )
