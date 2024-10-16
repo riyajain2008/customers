@@ -23,7 +23,7 @@ and Delete Customer
 
 from flask import jsonify, request, url_for, abort
 from flask import current_app as app  # Import Flask application
-from service.models import Customer
+from service.models import Customer, DataValidationError
 from service.common import status  # HTTP Status Codes
 
 
@@ -33,15 +33,71 @@ from service.common import status  # HTTP Status Codes
 @app.route("/")
 def index():
     """Root URL response"""
+
     return (
-        "Reminder: return some useful information in json format about the service here",
+        jsonify(
+            name="Customer REST API Service",
+            version="1.0",
+            description=(
+                "This is a RESTful service for managing customers. You can list, view, "
+                "create, update, and delete customer information."
+            ),
+            paths={
+                "list_customers": {
+                    "method": "GET",
+                    "url": url_for("list_customers", _external=True),
+                },
+                "get_customer": {
+                    "method": "GET",
+                    "url": url_for("get_customers", customer_id=1, _external=True),
+                },
+                "create_customer": {
+                    "method": "POST",
+                    "url": url_for("create_customers", _external=True),
+                },
+                "update_customer": {
+                    "method": "PUT",
+                    "url": url_for("update_customers", customer_id=1, _external=True),
+                },
+            },
+        ),
         status.HTTP_200_OK,
     )
 
 
 ######################################################################
-# LIST ALL customerS
+#  R E S T   A P I   E N D P O I N T S
 ######################################################################
+
+
+@app.route("/customers", methods=["POST"])
+def create_customers():
+    """
+    Create a Customer
+    This endpoint will create a Customer based the data in the body that is posted
+    """
+    app.logger.info("Request to Create a Customer...")
+    check_content_type("application/json")
+
+    customer = Customer()
+    # Get the data from the request and deserialize it
+    data = request.get_json()
+    app.logger.info("Processing: %s", data)
+    customer.deserialize(data)
+
+    # Save the new Customer to the database
+    customer.create()
+    app.logger.info("Customer with new id [%s] saved!", customer.id)
+
+    # Return the location of the new Customer
+    location_url = url_for("get_customers", customer_id=customer.id, _external=True)
+    return (
+        jsonify(customer.serialize()),
+        status.HTTP_201_CREATED,
+        {"Location": location_url},
+    )
+
+
 @app.route("/customers", methods=["GET"])
 def list_customers():
     """Returns all of the Customers"""
@@ -49,8 +105,6 @@ def list_customers():
 
     customers = []
 
-    # Parse any arguments from the query string
-    # category = request.args.get("category")
     name = request.args.get("name")
     email = request.args.get("email")
     phone_number = request.args.get("phone_number")
@@ -61,14 +115,14 @@ def list_customers():
         customers = Customer.find_by_name(name)
     elif email:
         app.logger.info("Find by email: %s", email)
-        customers = Customer.find(email)
+        customers = Customer.find_by_email(email)
     elif phone_number:
         app.logger.info("Find by phone_number: %s", phone_number)
         # create enum from string
-        customers = Customer.find(phone_number)
+        customers = Customer.find_by_phone_number(phone_number)
     elif address:
         app.logger.info("Find by address: %s", address)
-        customers = Customer.find(address)
+        customers = Customer.find_by_address(address)
     else:
         app.logger.info("Find all")
         customers = Customer.all()
@@ -100,38 +154,36 @@ def get_customers(customer_id):
 
 
 ######################################################################
-#  R E S T   A P I   E N D P O I N T S
+# CREATE A NEW PET
 ######################################################################
 
 
-@app.route("/customers", methods=["POST"])
-def create_customers():
+######################################################################
+# UPDATE AN EXISTING PET
+######################################################################
+@app.route("/customers/<int:customer_id>", methods=["PUT"])
+def update_customers(customer_id):
     """
-    Create a Customer
-    This endpoint will create a Customer based the data in the body that is posted
+    Update a Customer
+    This endpoint will update a Customer based the body that is posted
     """
-    app.logger.info("Request to Create a Customer...")
+    app.logger.info("Request to Update a customer with id [%s]", customer_id)
     check_content_type("application/json")
 
-    customer = Customer()
-    # Get the data from the request and deserialize it
+    customer = Customer.find(customer_id)
+    if not customer:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Customer with id '{customer_id}' was not found.",
+        )
+
     data = request.get_json()
     app.logger.info("Processing: %s", data)
     customer.deserialize(data)
 
-    # Save the new Customer to the database
-    customer.create()
-    app.logger.info("Customer with new id [%s] saved!", customer.id)
-
-    # Return the location of the new Customer
-    # TODO: uncomment this line after implementing get_customers
-    location_url = url_for("get_customers", customer_id=customer.id, _external=True)
-    # location_url = "url_for_get_customers"
-    return (
-        jsonify(customer.serialize()),
-        status.HTTP_201_CREATED,
-        {"Location": location_url},
-    )
+    customer.update()
+    app.logger.info("Customer with id [%s] updated!", customer.id)
+    return jsonify(customer.serialize()), status.HTTP_200_OK
 
 
 def check_content_type(content_type) -> None:
@@ -158,7 +210,7 @@ def check_content_type(content_type) -> None:
 ######################################################################
 
 
-@app.route("/customers/<int:customer_id>", methods=["DELETE"])
+@app.route("/customers/<customer_id>", methods=["DELETE"])
 def delete_customer(customer_id):
     """
     Delete a customer
@@ -167,38 +219,20 @@ def delete_customer(customer_id):
     """
     app.logger.info("Request to Delete a customer with id [%s]", customer_id)
 
-    # Delete the customer if it exists
+    try:
+        customer_id = int(customer_id)
+    except ValueError as exc:
+        raise DataValidationError("Bad ID format") from exc
+
     customer = Customer.find(customer_id)
     if customer:
         app.logger.info("Customer with ID: %d found.", customer.id)
         customer.delete()
         app.logger.info("Customer with ID: %d deleted.", customer.id)
         return {}, status.HTTP_204_NO_CONTENT
-    else:
-        app.logger.info("Customer with ID: %d not found.", customer_id)
-        abort(
-            status.HTTP_404_NOT_FOUND,
-            f"Customer with id '{customer_id}' was not found.",
-        )
 
-
-# Todo: Uncomment this code when last_active has been updated in model in sprint2
-# @app.route("/customers/inactive", methods=["DELETE"])
-# def delete_inactive_customers():
-#     """
-#     Delete the customer with inactive_period more than 360 days
-#     """
-#     inactive_period = timedelta(days=360)
-#     customers = Customer.find_inactive_customers(inactive_period)
-
-#     if not customers:
-#         abort(status.HTTP_404_NOT_FOUND, "No inactive customers found.")
-
-#     for customer in customers:
-#         customer.delete()
-#         app.logger.info(f"Customer with ID {customer.id} deleted due to inactivity.")
-
-#     return (
-#         jsonify({"message": f"{len(customers)} customers deleted."}),
-#         status.HTTP_200_OK,
-#     )
+    app.logger.info("Customer with ID: %d not found.", customer_id)
+    abort(
+        status.HTTP_404_NOT_FOUND,
+        f"Customer with id '{customer_id}' was not found.",
+    )

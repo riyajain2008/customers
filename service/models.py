@@ -26,12 +26,10 @@ class Customer(db.Model):
     # Table Schema
     ##################################################
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(63))
-    email = db.Column(
-        db.String(255), nullable=False, unique=True
-    )  # email, must be unique
-    phone_number = db.Column(db.String(50), nullable=False)  # phone number
-    address = db.Column(db.String(255), nullable=True)  # address, could be null
+    name = db.Column(db.String(63), nullable=False)
+    email = db.Column(db.String(63), nullable=False)  # email, must be unique
+    phone_number = db.Column(db.String(25), nullable=False)  # phone number
+    address = db.Column(db.String(255), nullable=False)  # address, could be null
 
     def __repr__(self):
         return f"<Customer {self.name} id=[{self.id}]>"
@@ -55,6 +53,8 @@ class Customer(db.Model):
         Updates a Customer to the database
         """
         logger.info("Saving %s", self.name)
+        if not self.id:
+            raise DataValidationError("Update called with empty ID field")
         try:
             db.session.commit()
         except Exception as e:
@@ -94,7 +94,7 @@ class Customer(db.Model):
             self.name = data["name"]
             self.email = data["email"]
             self.phone_number = data["phone_number"]
-            self.address = data.get("address", "")
+            self.address = data["address"]
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
@@ -134,11 +134,32 @@ class Customer(db.Model):
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
 
-    # Uncomment this code when last_active is updated in model in sprint2
-    # @classmethod
-    # def find_inactive_customers(cls, inactive_period):
-    #     """
-    #     find all customers with inactive days more than inactive_period
-    #     """
-    #     threshold = datetime.utcnow() - inactive_period
-    #     return cls.query.filter(cls.last_active < threshold).all()
+    @classmethod
+    def find_by_email(cls, email):
+        """Returns all Customers with the given email
+
+        Args:
+            email (string): the email of the Customers you want to match
+        """
+        logger.info("Processing email query for %s ...", email)
+        return cls.query.filter(cls.email == email)
+
+    @classmethod
+    def find_by_phone_number(cls, phone_number):
+        """Returns all Customers with the given phone_number
+
+        Args:
+            phone_number (string): the phone_number of the Customers you want to match
+        """
+        logger.info("Processing phone_number query for %s ...", phone_number)
+        return cls.query.filter(cls.phone_number == phone_number)
+
+    @classmethod
+    def find_by_address(cls, address):
+        """Returns all Customers with the given address
+
+        Args:
+            address (string): the address of the Customers you want to match
+        """
+        logger.info("Processing address query for %s ...", address)
+        return cls.query.filter(cls.address == address)
