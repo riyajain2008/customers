@@ -178,6 +178,36 @@ class TestYourResourceService(TestCase):
         self.assertEqual(updated_customer["phone_number"], "123-456-7890")
         self.assertEqual(updated_customer["address"], "123 Updated Address")
 
+    def test_delete_customer(self):
+        """It should Delete a customer"""
+        test_customer = self._create_customers(1)[0]
+        response = self.client.delete(f"{BASE_URL}/{test_customer.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(response.data), 0)
+        # make sure they are deleted
+        response = self.client.get(f"{BASE_URL}/{test_customer.id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_non_existing_customer(self):
+        """It should return 404 when trying to delete a non-existing customer"""
+        response = self.client.delete(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn("Customer with id '0' was not found", response.data.decode())
+
+    def test_delete_last_customer(self):
+        """It should delete the last customer and the database should be empty"""
+        test_customer = self._create_customers(1)[0]
+
+        # Delete the last customer
+        response = self.client.delete(f"{BASE_URL}/{test_customer.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Make sure that database is empty
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 0)
+
 
 class TestSadPaths(TestCase):
     """Test REST Exception Handling"""
@@ -215,6 +245,11 @@ class TestSadPaths(TestCase):
         response = self.client.post(BASE_URL, json=test_customer.serialize())
         print(response)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_delete_customer_no_id(self):
+        """It should not allow deletion without a customer id"""
+        response = self.client.delete(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     ######################################################################
     #  T E S T   M O C K S
@@ -283,3 +318,11 @@ class TestSadPaths(TestCase):
         ]
         response = self.client.get(BASE_URL, query_string="address=NYC, NY")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @patch("service.routes.Customer.find")
+    def test_delete_customer_bad_request(self, bad_request_mock):
+        """It should return 400 when trying to delete with bad request data"""
+        bad_request_mock.side_effect = DataValidationError("Bad ID format")
+        response = self.client.delete(f"{BASE_URL}/invalid_id")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Bad ID format", response.data.decode())

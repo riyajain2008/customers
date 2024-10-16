@@ -23,7 +23,7 @@ and Delete Customer
 
 from flask import jsonify, request, url_for, abort
 from flask import current_app as app  # Import Flask application
-from service.models import Customer
+from service.models import Customer, DataValidationError
 from service.common import status  # HTTP Status Codes
 
 
@@ -202,4 +202,37 @@ def check_content_type(content_type) -> None:
     abort(
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         f"Content-Type must be {content_type}",
+    )
+
+
+######################################################################
+# DELETE A CUSTOMER
+######################################################################
+
+
+@app.route("/customers/<customer_id>", methods=["DELETE"])
+def delete_customer(customer_id):
+    """
+    Delete a customer
+
+    This endpoint will delete a customer based the id specified in the path
+    """
+    app.logger.info("Request to Delete a customer with id [%s]", customer_id)
+
+    try:
+        customer_id = int(customer_id)
+    except ValueError as exc:
+        raise DataValidationError("Bad ID format") from exc
+
+    customer = Customer.find(customer_id)
+    if customer:
+        app.logger.info("Customer with ID: %d found.", customer.id)
+        customer.delete()
+        app.logger.info("Customer with ID: %d deleted.", customer.id)
+        return {}, status.HTTP_204_NO_CONTENT
+
+    app.logger.info("Customer with ID: %d not found.", customer_id)
+    abort(
+        status.HTTP_404_NOT_FOUND,
+        f"Customer with id '{customer_id}' was not found.",
     )
