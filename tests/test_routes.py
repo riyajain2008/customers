@@ -208,18 +208,6 @@ class TestYourResourceService(TestCase):
         data = response.get_json()
         self.assertEqual(len(data), 0)
 
-    # Uncomment this code after solve the problem in logging
-    # def test_delete_customer_with_logging(self):
-    #     """It should delete a customer and log the event"""
-    #     test_customer = self._create_customers(1)[0]
-
-    #     with self.assertLogs('flask.app', level='INFO') as log:
-    #         response = self.client.delete(f"{BASE_URL}/{test_customer.id}")
-    #         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
-    #         # make sure log takes correct information
-    #         self.assertIn(f"Customer with ID: {test_customer.id} deleted.", log.output)
-
 
 class TestSadPaths(TestCase):
     """Test REST Exception Handling"""
