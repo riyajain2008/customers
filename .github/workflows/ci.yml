@@ -15,18 +15,19 @@ jobs:
 
     # Required services    
     services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: sup3rs3cr3t
-          POSTGRES_DB: testdb
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        postgres:
+          image: postgres:latest
+          env:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: test_db
+          ports:
+            - 5432:5432
+          options: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
 
     # Steps for the build
     steps:
@@ -49,11 +50,18 @@ jobs:
           flake8 service tests --count --max-complexity=10 --max-line-length=127 --statistics
           # Run pylint to catch other PEP8 errors
           pylint service tests --max-line-length=127
+    
+      - name: Wait for database connection
+        run: |
+            for i in {1..30}; do
+            pg_isready -h localhost -p 5432 && break
+            sleep 1
+            done
 
       - name: Run unit tests with PyTest
         run: pytest --pspec --cov=service --cov-report=xml --cov-fail-under=95
         env:
-          DATABASE_URI: "postgresql+psycopg://postgres:sup3rs3cr3t@localhost:5432/testdb"
+            DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
     
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3.1.4
