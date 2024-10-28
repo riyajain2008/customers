@@ -59,6 +59,14 @@ def index():
                     "method": "PUT",
                     "url": url_for("update_customers", customer_id=1, _external=True),
                 },
+                "delete_customers": {
+                    "method": "DELETE",
+                    "url": url_for("delete_customers", customer_id=1, _external=True),
+                },
+                "suspend_customer": {
+                    "method": "PUT",
+                    "url": url_for("suspend_customers", customer_id=1, _external=True),
+                },
             },
         ),
         status.HTTP_200_OK,
@@ -70,6 +78,9 @@ def index():
 ######################################################################
 
 
+######################################################################
+# CREATE A NEW PET
+######################################################################
 @app.route("/customers", methods=["POST"])
 def create_customers():
     """
@@ -154,11 +165,6 @@ def get_customers(customer_id):
 
 
 ######################################################################
-# CREATE A NEW PET
-######################################################################
-
-
-######################################################################
 # UPDATE AN EXISTING PET
 ######################################################################
 @app.route("/customers/<int:customer_id>", methods=["PUT"])
@@ -186,32 +192,13 @@ def update_customers(customer_id):
     return jsonify(customer.serialize()), status.HTTP_200_OK
 
 
-def check_content_type(content_type) -> None:
-    """Checks that the media type is correct"""
-    if "Content-Type" not in request.headers:
-        app.logger.error("No Content-Type specified.")
-        abort(
-            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            f"Content-Type must be {content_type}",
-        )
-
-    if request.headers["Content-Type"] == content_type:
-        return
-
-    app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
-    abort(
-        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-        f"Content-Type must be {content_type}",
-    )
-
-
 ######################################################################
 # DELETE A CUSTOMER
 ######################################################################
 
 
 @app.route("/customers/<customer_id>", methods=["DELETE"])
-def delete_customer(customer_id):
+def delete_customers(customer_id):
     """
     Delete a customer
 
@@ -235,4 +222,56 @@ def delete_customer(customer_id):
     abort(
         status.HTTP_404_NOT_FOUND,
         f"Customer with id '{customer_id}' was not found.",
+    )
+
+
+######################################################################
+# SUSPEND A CUSTOMER
+######################################################################
+@app.route("/customers/<int:customer_id>/state", methods=["PUT"])
+def suspend_customers(customer_id):
+    """Suspending a Customer makes it invalid"""
+    app.logger.info("Request to suspend customer with id: %d", customer_id)
+
+    # Attempt to find the Customer and abort if not found
+    customer = Customer.find(customer_id)
+    if not customer:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Customer with id '{customer_id}' was not found.",
+        )
+
+    # you can only suspend customers that are valid
+    if not customer.state:
+        abort(
+            status.HTTP_409_CONFLICT,
+            f"Customer with id '{customer_id}' is already suspended.",
+        )
+
+    # At this point you would execute code to suspend the customer
+    # For the moment, we will just set them to invalid
+
+    customer.state = False
+    customer.update()
+
+    app.logger.info("Customer with ID: %d has been suspended.", customer_id)
+    return customer.serialize(), status.HTTP_200_OK
+
+
+def check_content_type(content_type) -> None:
+    """Checks that the media type is correct"""
+    if "Content-Type" not in request.headers:
+        app.logger.error("No Content-Type specified.")
+        abort(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            f"Content-Type must be {content_type}",
+        )
+
+    if request.headers["Content-Type"] == content_type:
+        return
+
+    app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
+    abort(
+        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+        f"Content-Type must be {content_type}",
     )
