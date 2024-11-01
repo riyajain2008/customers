@@ -38,7 +38,7 @@ jobs:
           python -m pip install psycopg2-binary
           python -m pip install poetry
           poetry config virtualenvs.create false
-          poetry lock --no-update
+          poetry lock
           poetry install
 
       - name: Run make lint
