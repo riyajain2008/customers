@@ -80,3 +80,4 @@ This repository is part of the New York University (NYU) masters class: **CSCI-G
 - When you work on a story, always select the top story from the 'sprint backlog' without dependency on in progress stories, drag it into 'In Progress', and assign it to yourself. Pull the latest code from GitHub, create a new branch, and write your code on that branch.
 - When you finish working on a story, commit your branch to GitHub, create a new pull request, and link it to the corresponding story. Then, drag it into 'Review/QA'.
 - Add unit tests for your stories, **covering both happy and sad paths**.
+- test coverage
