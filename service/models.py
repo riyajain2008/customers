@@ -173,3 +173,19 @@ class Customer(db.Model):
         """
         logger.info("Processing address query for %s ...", address)
         return cls.query.filter(cls.address == address)
+
+    @classmethod
+    def find_by_state(cls, state: bool = True) -> list:
+        """Returns all Customers by their state
+
+        :param available: True for customers that are available
+        :type available: str
+
+        :return: a collection of Customers that are available
+        :rtype: list
+
+        """
+        if not isinstance(state, bool):
+            raise TypeError("Invalid availability, must be of type boolean")
+        logger.info("Processing available query for %s ...", state)
+        return cls.query.filter(cls.state == state)

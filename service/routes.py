@@ -23,7 +23,7 @@ and Delete Customer
 
 from flask import jsonify, request, url_for, abort
 from flask import current_app as app  # Import Flask application
-from service.models import Customer, DataValidationError
+from service.models import Customer
 from service.common import status  # HTTP Status Codes
 
 
@@ -120,6 +120,7 @@ def list_customers():
     email = request.args.get("email")
     phone_number = request.args.get("phone_number")
     address = request.args.get("address")
+    state = request.args.get("state")
 
     if name:
         app.logger.info("Find by name: %s", name)
@@ -134,6 +135,10 @@ def list_customers():
     elif address:
         app.logger.info("Find by address: %s", address)
         customers = Customer.find_by_address(address)
+    elif state:
+        app.logger.info("Find by state: %s", state)
+        state_value = state.lower() in ["true", "yes", "1"]
+        customers = Customer.find_by_state(state_value)
     else:
         app.logger.info("Find all")
         customers = Customer.all()
@@ -197,7 +202,7 @@ def update_customers(customer_id):
 ######################################################################
 
 
-@app.route("/customers/<customer_id>", methods=["DELETE"])
+@app.route("/customers/<int:customer_id>", methods=["DELETE"])
 def delete_customers(customer_id):
     """
     Delete a customer
@@ -206,23 +211,14 @@ def delete_customers(customer_id):
     """
     app.logger.info("Request to Delete a customer with id [%s]", customer_id)
 
-    try:
-        customer_id = int(customer_id)
-    except ValueError as exc:
-        raise DataValidationError("Bad ID format") from exc
-
+    # Delete the Customer if it exists
     customer = Customer.find(customer_id)
     if customer:
         app.logger.info("Customer with ID: %d found.", customer.id)
         customer.delete()
-        app.logger.info("Customer with ID: %d deleted.", customer.id)
-        return {}, status.HTTP_204_NO_CONTENT
 
-    app.logger.info("Customer with ID: %d not found.", customer_id)
-    abort(
-        status.HTTP_404_NOT_FOUND,
-        f"Customer with id '{customer_id}' was not found.",
-    )
+    app.logger.info("Customer with ID: %d delete complete.", customer_id)
+    return {}, status.HTTP_204_NO_CONTENT
 
 
 ######################################################################
