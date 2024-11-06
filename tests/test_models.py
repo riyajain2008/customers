@@ -340,3 +340,15 @@ class TestModelQueries(TestCaseBase):
         self.assertEqual(found.count(), count)
         for customer in found:
             self.assertEqual(customer.address, address)
+
+    def test_find_by_state(self):
+        """It should Find Customers by state"""
+        customers = CustomerFactory.create_batch(10)
+        for customer in customers:
+            customer.create()
+        state = customers[0].state
+        count = len([customer for customer in customers if customer.state == state])
+        found = Customer.find_by_state(state)
+        self.assertEqual(found.count(), count)
+        for customer in found:
+            self.assertEqual(customer.state, state)
