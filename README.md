@@ -2,6 +2,8 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/Language-Python-blue.svg)](https://python.org/)
+[![Build Status](https://github.com/CSCI-GA-2820-FA24-003/customers/actions/workflows/ci.yml/badge.svg)](https://github.com/CSCI-GA-2820-FA24-003/customers/actions)
+[![codecov](https://codecov.io/github/CSCI-GA-2820-FA24-003/customers/graph/badge.svg?token=A428VOBNW3)](https://codecov.io/github/CSCI-GA-2820-FA24-003/customers)
 
 This is a skeleton you can use to start your projects
 
