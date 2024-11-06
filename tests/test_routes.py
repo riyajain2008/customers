@@ -39,7 +39,7 @@ BASE_URL = "/customers"
 #  T E S T   C A S E S
 ######################################################################
 # pylint: disable=too-many-public-methods
-class TestYourResourceService(TestCase):
+class TestCustomerService(TestCase):
     """REST API Server Tests"""
 
     @classmethod
@@ -178,7 +178,10 @@ class TestYourResourceService(TestCase):
         self.assertEqual(updated_customer["phone_number"], "123-456-7890")
         self.assertEqual(updated_customer["address"], "123 Updated Address")
 
-    def test_delete_customer(self):
+    # ----------------------------------------------------------
+    # TEST DELETE
+    # ----------------------------------------------------------
+    def test_delete_customers(self):
         """It should Delete a customer"""
         test_customer = self._create_customers(1)[0]
         response = self.client.delete(f"{BASE_URL}/{test_customer.id}")
@@ -207,6 +210,32 @@ class TestYourResourceService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), 0)
+
+    # ----------------------------------------------------------
+    # TEST ACTIONS
+    # ----------------------------------------------------------
+    def test_suspend_a_customer(self):
+        """It should Purchase a Customer"""
+        customers = self._create_customers(10)
+        valid_customers = [customer for customer in customers if customer.state is True]
+        customer = valid_customers[0]
+        response = self.client.put(f"{BASE_URL}/{customer.id}/state")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.client.get(f"{BASE_URL}/{customer.id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        logging.debug("Response data: %s", data)
+        self.assertEqual(data["state"], False)
+
+    def test_purchase_not_valid(self):
+        """It should not Purchase a Customer that is not available"""
+        customers = self._create_customers(10)
+        invalid_customers = [
+            customer for customer in customers if customer.state is False
+        ]
+        customer = invalid_customers[0]
+        response = self.client.put(f"{BASE_URL}/{customer.id}/state")
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
 
 class TestSadPaths(TestCase):
@@ -246,7 +275,7 @@ class TestSadPaths(TestCase):
         print(response)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_delete_customer_no_id(self):
+    def test_delete_customers_no_id(self):
         """It should not allow deletion without a customer id"""
         response = self.client.delete(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -320,7 +349,7 @@ class TestSadPaths(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @patch("service.routes.Customer.find")
-    def test_delete_customer_bad_request(self, bad_request_mock):
+    def test_delete_customers_bad_request(self, bad_request_mock):
         """It should return 400 when trying to delete with bad request data"""
         bad_request_mock.side_effect = DataValidationError("Bad ID format")
         response = self.client.delete(f"{BASE_URL}/invalid_id")

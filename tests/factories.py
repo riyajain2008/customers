@@ -7,7 +7,7 @@ from service.models import Customer
 
 
 class CustomerFactory(factory.Factory):
-    """Creates fake pets that you don't have to feed"""
+    """Creates fake customers that you don't have to feed"""
 
     class Meta:  # pylint: disable=too-few-public-methods
         """Maps factory to data model"""
@@ -19,3 +19,4 @@ class CustomerFactory(factory.Factory):
     email = factory.Faker("email")
     phone_number = factory.Faker("phone_number")
     address = factory.Faker("address")
+    state = factory.Faker("boolean", chance_of_getting_true=50)

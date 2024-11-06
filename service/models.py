@@ -30,6 +30,9 @@ class Customer(db.Model):
     email = db.Column(db.String(63), nullable=False)  # email, must be unique
     phone_number = db.Column(db.String(25), nullable=False)  # phone number
     address = db.Column(db.String(255), nullable=False)  # address, could be null
+    state = db.Column(
+        db.Boolean(), nullable=False, default=True
+    )  # customer state, false when suspended
 
     def __repr__(self):
         return f"<Customer {self.name} id=[{self.id}]>"
@@ -81,6 +84,7 @@ class Customer(db.Model):
             "email": self.email,
             "phone_number": self.phone_number,
             "address": self.address,
+            "state": self.state,
         }
 
     def deserialize(self, data):
@@ -95,6 +99,12 @@ class Customer(db.Model):
             self.email = data["email"]
             self.phone_number = data["phone_number"]
             self.address = data["address"]
+            if isinstance(data["state"], bool):
+                self.state = data["state"]
+            else:
+                raise DataValidationError(
+                    "Invalid type for boolean [state]: " + str(type(data["state"]))
+                )
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
