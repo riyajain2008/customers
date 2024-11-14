@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Pet Demo RESTful Service</title>
+    <title>Customer Demo RESTful Service</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,7 +11,7 @@
   <body>
     <div class="container">
       <div class="page-header">
-          <h1>Pet Demo REST API Service</h1>
+          <h1>Customer Demo REST API Service</h1>
       </div>
 
       <!-- Flash Message -->
@@ -48,42 +48,38 @@
               </div>
             </div>
 
-            <!-- CATEGORY -->
+            <!-- EMAIL -->
             <div class="form-group">
-              <label class="control-label col-sm-2" for="pet_category">Category:</label>
+              <label class="control-label col-sm-2" for="pet_email">Email:</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="pet_category" placeholder="Enter category for Pet">
+                <input type="text" class="form-control" id="pet_email" placeholder="Enter email for Pet">
               </div>
             </div>
 
-            <!-- AVAILABLE -->
+            <!-- PHONE NUMBER -->
             <div class="form-group">
-              <label class="control-label col-sm-2" for="pet_available">Available:</label>
+              <label class="control-label col-sm-2" for="pet_phone_number">Phone Number:</label>
               <div class="col-sm-10">
-                <select class="form-control" id="pet_available">
+                <input type="text" class="form-control" id="pet_phone_number" placeholder="Enter phone number for Pet">
+              </div>
+            </div>
+
+            <!-- ADDRESS -->
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="pet_address">Address:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="pet_address" placeholder="Enter address for Pet">
+              </div>
+            </div>
+
+            <!-- STATE -->
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="pet_state">State:</label>
+              <div class="col-sm-10">
+                <select class="form-control" id="pet_state">
                   <option value="true" selected>True</option>
                   <option value="false">False</option>
                 </select>
-              </div>
-            </div>
-
-            <!-- GENDER -->
-            <div class="form-group">
-              <label class="control-label col-sm-2" for="pet_gender">Gender:</label>
-              <div class="col-sm-10">
-                <select class="form-control" id="pet_gender">
-                  <option value="UNKNOWN" selected>Unknown</option>
-                  <option value="MALE">Male</option>
-                  <option value="FEMALE">Female</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- BIRTHDAY -->
-            <div class="form-group">
-              <label class="control-label col-sm-2" for="pet_birthday">Birthday:</label>
-              <div class="col-sm-10">
-                <input type="date" class="form-control" id="pet_birthday" placeholder="2020-04-01">
               </div>
             </div>
 
@@ -108,10 +104,10 @@
           <tr>
             <th class="col-md-1">ID</th>
             <th class="col-md-4">Name</th>
-            <th class="col-md-4">Category</th>
-            <th class="col-md-3">Available</th>
-            <th class="col-md-3">Gender</th>
-            <th class="col-md-3">Birthday</th>
+            <th class="col-md-4">Email</th>
+            <th class="col-md-3">Phone Number</th>
+            <th class="col-md-3">Address</th>
+            <th class="col-md-3">State</th>
           </tr>
           </thead>
         </table>

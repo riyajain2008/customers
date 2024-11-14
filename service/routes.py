@@ -32,45 +32,8 @@ from service.common import status  # HTTP Status Codes
 ######################################################################
 @app.route("/")
 def index():
-    """Root URL response"""
-
-    return (
-        jsonify(
-            name="Customer REST API Service",
-            version="1.0",
-            description=(
-                "This is a RESTful service for managing customers. You can list, view, "
-                "create, update, and delete customer information."
-            ),
-            paths={
-                "list_customers": {
-                    "method": "GET",
-                    "url": url_for("list_customers", _external=True),
-                },
-                "get_customer": {
-                    "method": "GET",
-                    "url": url_for("get_customers", customer_id=1, _external=True),
-                },
-                "create_customer": {
-                    "method": "POST",
-                    "url": url_for("create_customers", _external=True),
-                },
-                "update_customer": {
-                    "method": "PUT",
-                    "url": url_for("update_customers", customer_id=1, _external=True),
-                },
-                "delete_customers": {
-                    "method": "DELETE",
-                    "url": url_for("delete_customers", customer_id=1, _external=True),
-                },
-                "suspend_customer": {
-                    "method": "PUT",
-                    "url": url_for("suspend_customers", customer_id=1, _external=True),
-                },
-            },
-        ),
-        status.HTTP_200_OK,
-    )
+    """Base URL for our service"""
+    return app.send_static_file("index.html")
 
 
 ######################################################################
