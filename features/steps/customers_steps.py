@@ -53,10 +53,10 @@ def step_impl(context):
     for row in context.table:
         payload = {
             "name": row["name"],
-            "category": row["category"],
-            "available": row["available"] in ["True", "true", "1"],
-            "gender": row["gender"],
-            "birthday": row["birthday"],
+            "email": row["email"],
+            "phone_number": row["phone_number"],
+            "address": row["address"],
+            "state": row["state"] in ["True", "true", "1"],
         }
         context.resp = requests.post(rest_endpoint, json=payload, timeout=WAIT_TIMEOUT)
         expect(context.resp.status_code).equal_to(HTTP_201_CREATED)

@@ -219,6 +219,13 @@ $(function () {
                 queryString += 'address=' + address
             }
         }
+        if (state) {
+            if (queryString.length > 0) {
+                queryString += '&state=' + state
+            } else {
+                queryString += 'state=' + state
+            }
+        }
         
 
         $("#flash_message").empty();
