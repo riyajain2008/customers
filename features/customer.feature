@@ -93,6 +93,7 @@ Scenario: Search by state
     And I should see "Bruce Wayne" in the results
     And I should not see "Harry Potter" in the results
 
+# READ
 Scenario: Read a Customer
     When I visit the "Home Page"
     And I set the "Name" to "Sherlock Holmes"
@@ -109,6 +110,7 @@ Scenario: Read a Customer
     And I should see "221B Baker Street" in the "Address" field
     And I should see "True" in the "State" dropdown
 
+# UPDATE
 Scenario: Update a Customer
     When I visit the "Home Page"
     And I set the "Name" to "Sherlock Holmes"
