@@ -51,3 +51,12 @@ Scenario: List all customers
     And I should see "Frodo Baggins" in the results
     And I should see "Bruce Wayne" in the results
     And I should not see "Harry Potter" in the results
+
+Scenario: Search for customers
+    When I visit the "Home Page"
+    And I set the "Email" to "sherlock.holmes@detectivemail.com"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Sherlock Holmes" in the results
+    And I should not see "Homer Simpson" in the results
+    And I should not see "Harry Potter" in the results
