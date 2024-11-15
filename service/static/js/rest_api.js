@@ -81,17 +81,17 @@ $(function () {
 
         let customer_id = $("#customer_id").val();
         let name = $("#customer_name").val();
-        let category = $("#customer_category").val();
-        let available = $("#customer_available").val() == "true";
-        let gender = $("#customer_gender").val();
-        let birthday = $("#customer_birthday").val();
+        let email = $("#customer_email").val();
+        let phone_number = $("#customer_phone_number").val();
+        let address = $("#customer_address").val();
+        let state = $("#customer_state").val() == "true";
 
         let data = {
             "name": name,
-            "category": category,
-            "available": available,
-            "gender": gender,
-            "birthday": birthday
+            "email": email,
+            "phone_number": phone_number,
+            "address": address,
+            "state": state
         };
 
         $("#flash_message").empty();
@@ -188,28 +188,38 @@ $(function () {
     $("#search-btn").click(function () {
 
         let name = $("#customer_name").val();
-        let category = $("#customer_category").val();
-        let available = $("#customer_available").val() == "true";
+        let email = $("#customer_email").val();
+        let phone_number = $("#customer_phone_number").val();
+        let address = $("#customer_address").val();
+        let state = $("#customer_state").val() == "true";
 
         let queryString = ""
 
         if (name) {
             queryString += 'name=' + name
         }
-        if (category) {
+        if (email) {
             if (queryString.length > 0) {
-                queryString += '&category=' + category
+                queryString += '&email=' + email
             } else {
-                queryString += 'category=' + category
+                queryString += 'email=' + email
             }
         }
-        if (available) {
+        if (phone_number) {
             if (queryString.length > 0) {
-                queryString += '&available=' + available
+                queryString += '&phone_number=' + phone_number
             } else {
-                queryString += 'available=' + available
+                queryString += 'phone_number=' + phone_number
             }
         }
+        if (address) {
+            if (queryString.length > 0) {
+                queryString += '&address=' + address
+            } else {
+                queryString += 'address=' + address
+            }
+        }
+        
 
         $("#flash_message").empty();
 
@@ -227,15 +237,15 @@ $(function () {
             table += '<thead><tr>'
             table += '<th class="col-md-2">ID</th>'
             table += '<th class="col-md-2">Name</th>'
-            table += '<th class="col-md-2">Category</th>'
-            table += '<th class="col-md-2">Available</th>'
-            table += '<th class="col-md-2">Gender</th>'
-            table += '<th class="col-md-2">Birthday</th>'
+            table += '<th class="col-md-2">Email</th>'
+            table += '<th class="col-md-2">Phone Number</th>'
+            table += '<th class="col-md-2">Address</th>'
+            table += '<th class="col-md-2">State</th>'
             table += '</tr></thead><tbody>'
             let firstCustomer = "";
             for(let i = 0; i < res.length; i++) {
                 let customer = res[i];
-                table +=  `<tr id="row_${i}"><td>${customer.id}</td><td>${customer.name}</td><td>${customer.category}</td><td>${customer.available}</td><td>${customer.gender}</td><td>${customer.birthday}</td></tr>`;
+                table +=  `<tr id="row_${i}"><td>${customer.id}</td><td>${customer.name}</td><td>${customer.email}</td><td>${customer.phone_number}</td><td>${customer.address}</td><td>${customer.state}</td></tr>`;
                 if (i == 0) {
                     firstCustomer = customer;
                 }
