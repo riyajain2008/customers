@@ -92,3 +92,42 @@ Scenario: Search by state
     And I should see "Frodo Baggins" in the results
     And I should see "Bruce Wayne" in the results
     And I should not see "Harry Potter" in the results
+
+Scenario: Read a Customer
+    When I visit the "Home Page"
+    And I set the "Name" to "Sherlock Holmes"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "Sherlock Holmes" in the "Name" field
+    And I should see "sherlock.holmes@detectivemail.com" in the "Email" field
+    And I should see "555-123-4567" in the "Phone Number" field
+    And I should see "221B Baker Street" in the "Address" field
+    And I should see "True" in the "State" dropdown
+
+Scenario: Update a Customer
+    When I visit the "Home Page"
+    And I set the "Name" to "Sherlock Holmes"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "sherlock.holmes@detectivemail.com" in the "Email" field
+    And I should see "555-123-4567" in the "Phone Number" field
+    And I should see "221B Baker Street" in the "Address" field
+    When I change "Name" to "Loki"
+    And I press the "Update" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "Loki" in the "Name" field
+    When I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Loki" in the results
+    And I should not see "Sherlock Holmes" in the results
