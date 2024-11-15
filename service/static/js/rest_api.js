@@ -6,25 +6,25 @@ $(function () {
 
     // Updates the form with data from the response
     function update_form_data(res) {
-        $("#pet_id").val(res.id);
-        $("#pet_name").val(res.name);
-        $("#pet_category").val(res.category);
+        $("#customer_id").val(res.id);
+        $("#customer_name").val(res.name);
+        $("#customer_category").val(res.category);
         if (res.available == true) {
-            $("#pet_available").val("true");
+            $("#customer_available").val("true");
         } else {
-            $("#pet_available").val("false");
+            $("#customer_available").val("false");
         }
-        $("#pet_gender").val(res.gender);
-        $("#pet_birthday").val(res.birthday);
+        $("#customer_gender").val(res.gender);
+        $("#customer_birthday").val(res.birthday);
     }
 
     /// Clears all form fields
     function clear_form_data() {
-        $("#pet_name").val("");
-        $("#pet_category").val("");
-        $("#pet_available").val("");
-        $("#pet_gender").val("");
-        $("#pet_birthday").val("");
+        $("#customer_name").val("");
+        $("#customer_category").val("");
+        $("#customer_available").val("");
+        $("#customer_gender").val("");
+        $("#customer_birthday").val("");
     }
 
     // Updates the flash message area
@@ -34,16 +34,16 @@ $(function () {
     }
 
     // ****************************************
-    // Create a Pet
+    // Create a Customer
     // ****************************************
 
     $("#create-btn").click(function () {
 
-        let name = $("#pet_name").val();
-        let category = $("#pet_category").val();
-        let available = $("#pet_available").val() == "true";
-        let gender = $("#pet_gender").val();
-        let birthday = $("#pet_birthday").val();
+        let name = $("#customer_name").val();
+        let category = $("#customer_category").val();
+        let available = $("#customer_available").val() == "true";
+        let gender = $("#customer_gender").val();
+        let birthday = $("#customer_birthday").val();
 
         let data = {
             "name": name,
@@ -57,7 +57,7 @@ $(function () {
         
         let ajax = $.ajax({
             type: "POST",
-            url: "/pets",
+            url: "/customers",
             contentType: "application/json",
             data: JSON.stringify(data),
         });
@@ -74,17 +74,17 @@ $(function () {
 
 
     // ****************************************
-    // Update a Pet
+    // Update a Customer
     // ****************************************
 
     $("#update-btn").click(function () {
 
-        let pet_id = $("#pet_id").val();
-        let name = $("#pet_name").val();
-        let category = $("#pet_category").val();
-        let available = $("#pet_available").val() == "true";
-        let gender = $("#pet_gender").val();
-        let birthday = $("#pet_birthday").val();
+        let customer_id = $("#customer_id").val();
+        let name = $("#customer_name").val();
+        let category = $("#customer_category").val();
+        let available = $("#customer_available").val() == "true";
+        let gender = $("#customer_gender").val();
+        let birthday = $("#customer_birthday").val();
 
         let data = {
             "name": name,
@@ -98,7 +98,7 @@ $(function () {
 
         let ajax = $.ajax({
                 type: "PUT",
-                url: `/pets/${pet_id}`,
+                url: `/customers/${customer_id}`,
                 contentType: "application/json",
                 data: JSON.stringify(data)
             })
@@ -115,18 +115,18 @@ $(function () {
     });
 
     // ****************************************
-    // Retrieve a Pet
+    // Retrieve a Customer
     // ****************************************
 
     $("#retrieve-btn").click(function () {
 
-        let pet_id = $("#pet_id").val();
+        let customer_id = $("#customer_id").val();
 
         $("#flash_message").empty();
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/pets/${pet_id}`,
+            url: `/customers/${customer_id}`,
             contentType: "application/json",
             data: ''
         })
@@ -145,25 +145,25 @@ $(function () {
     });
 
     // ****************************************
-    // Delete a Pet
+    // Delete a Customer
     // ****************************************
 
     $("#delete-btn").click(function () {
 
-        let pet_id = $("#pet_id").val();
+        let customer_id = $("#customer_id").val();
 
         $("#flash_message").empty();
 
         let ajax = $.ajax({
             type: "DELETE",
-            url: `/pets/${pet_id}`,
+            url: `/customers/${customer_id}`,
             contentType: "application/json",
             data: '',
         })
 
         ajax.done(function(res){
             clear_form_data()
-            flash_message("Pet has been Deleted!")
+            flash_message("Customer has been Deleted!")
         });
 
         ajax.fail(function(res){
@@ -176,20 +176,20 @@ $(function () {
     // ****************************************
 
     $("#clear-btn").click(function () {
-        $("#pet_id").val("");
+        $("#customer_id").val("");
         $("#flash_message").empty();
         clear_form_data()
     });
 
     // ****************************************
-    // Search for a Pet
+    // Search for a Customer
     // ****************************************
 
     $("#search-btn").click(function () {
 
-        let name = $("#pet_name").val();
-        let category = $("#pet_category").val();
-        let available = $("#pet_available").val() == "true";
+        let name = $("#customer_name").val();
+        let category = $("#customer_category").val();
+        let available = $("#customer_available").val() == "true";
 
         let queryString = ""
 
@@ -215,7 +215,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/pets?${queryString}`,
+            url: `/customers?${queryString}`,
             contentType: "application/json",
             data: ''
         })
@@ -232,20 +232,20 @@ $(function () {
             table += '<th class="col-md-2">Gender</th>'
             table += '<th class="col-md-2">Birthday</th>'
             table += '</tr></thead><tbody>'
-            let firstPet = "";
+            let firstCustomer = "";
             for(let i = 0; i < res.length; i++) {
-                let pet = res[i];
-                table +=  `<tr id="row_${i}"><td>${pet.id}</td><td>${pet.name}</td><td>${pet.category}</td><td>${pet.available}</td><td>${pet.gender}</td><td>${pet.birthday}</td></tr>`;
+                let customer = res[i];
+                table +=  `<tr id="row_${i}"><td>${customer.id}</td><td>${customer.name}</td><td>${customer.category}</td><td>${customer.available}</td><td>${customer.gender}</td><td>${customer.birthday}</td></tr>`;
                 if (i == 0) {
-                    firstPet = pet;
+                    firstCustomer = customer;
                 }
             }
             table += '</tbody></table>';
             $("#search_results").append(table);
 
             // copy the first result to the form
-            if (firstPet != "") {
-                update_form_data(firstPet)
+            if (firstCustomer != "") {
+                update_form_data(firstCustomer)
             }
 
             flash_message("Success")
