@@ -1,5 +1,5 @@
 Feature: The customer store service back-end
-    As an Administrator
+    As an administrator of customer database
     I need a RESTful catalog service
     So that I can keep track of all my customers
 
@@ -18,6 +18,7 @@ Scenario: The server is running
     Then I should see "Customer Demo RESTful Service" in the title
     And I should not see "404 Not Found"
 
+# CREATE
 Scenario: Create a Customer
     When I visit the "Home Page"
     And I set the "Name" to "Sirius Black"
