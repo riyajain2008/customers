@@ -8,23 +8,23 @@ $(function () {
     function update_form_data(res) {
         $("#customer_id").val(res.id);
         $("#customer_name").val(res.name);
-        $("#customer_category").val(res.category);
-        if (res.available == true) {
-            $("#customer_available").val("true");
+        $("#customer_email").val(res.email);
+        $("#customer_phone_number").val(res.phone_number);
+        $("#customer_address").val(res.address);
+        if (res.state == true) {
+            $("#customer_state").val("true");
         } else {
-            $("#customer_available").val("false");
+            $("#customer_state").val("false");
         }
-        $("#customer_gender").val(res.gender);
-        $("#customer_birthday").val(res.birthday);
     }
 
     /// Clears all form fields
     function clear_form_data() {
         $("#customer_name").val("");
-        $("#customer_category").val("");
-        $("#customer_available").val("");
-        $("#customer_gender").val("");
-        $("#customer_birthday").val("");
+        $("#customer_email").val("");
+        $("#customer_phone_number").val("");
+        $("#customer_address").val("");
+        $("#customer_state").val("");
     }
 
     // Updates the flash message area
@@ -40,17 +40,17 @@ $(function () {
     $("#create-btn").click(function () {
 
         let name = $("#customer_name").val();
-        let category = $("#customer_category").val();
-        let available = $("#customer_available").val() == "true";
-        let gender = $("#customer_gender").val();
-        let birthday = $("#customer_birthday").val();
+        let email = $("#customer_email").val();
+        let phone_number = $("#customer_phone_number").val();
+        let address = $("#customer_address").val();
+        let state = $("#customer_state").val() == "true";
 
         let data = {
             "name": name,
-            "category": category,
-            "available": available,
-            "gender": gender,
-            "birthday": birthday
+            "email": email,
+            "phone_number": phone_number,
+            "address": address,
+            "state": state
         };
 
         $("#flash_message").empty();
