@@ -78,6 +78,13 @@ class TestCustomerService(TestCase):
         data = response.get_json()
         self.assertEqual(data["name"], "Customer REST API Service")
 
+    def test_health_check(self):
+        """It should call the health check endpoint"""
+        resp = self.client.get("/health")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data["message"], "Healthy")
+
     def _create_customers(self, count: int = 1) -> list:
         """Factory method to create customers in bulk"""
         customers = []
