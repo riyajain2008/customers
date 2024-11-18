@@ -41,3 +41,13 @@ Scenario: Create a Customer
     And I should see "555-112-3345" in the "Phone Number" field
     And I should see "12 Grimmauld Place" in the "Address" field
     And I should see "True" in the "State" dropdown
+
+Scenario: List all customers
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Sherlock Holmes" in the results
+    And I should not see "Homer Simpson" in the results
+    And I should see "Frodo Baggins" in the results
+    And I should see "Bruce Wayne" in the results
+    And I should not see "Harry Potter" in the results
