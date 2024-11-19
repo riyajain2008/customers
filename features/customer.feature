@@ -133,3 +133,22 @@ Scenario: Update a Customer
     Then I should see the message "Success"
     And I should see "Loki" in the results
     And I should not see "Sherlock Holmes" in the results
+
+# DELETE
+Scenario: Delete a Customer
+    When I visit the "Home Page"
+    And I set the "Name" to "Sherlock Holmes"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "sherlock.holmes@detectivemail.com" in the "Email" field
+    And I should see "555-123-4567" in the "Phone Number" field
+    And I should see "221B Baker Street" in the "Address" field
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "DELETE" button
+    Then I should see the message "Customer has been Deleted!"
+    When I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "404 Not Found"
