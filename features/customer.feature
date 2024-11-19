@@ -44,19 +44,51 @@ Scenario: Create a Customer
 
 Scenario: List all customers
     When I visit the "Home Page"
+    And I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Sherlock Holmes" in the results
+    And I should see "Homer Simpson" in the results
+    And I should see "Frodo Baggins" in the results
+    And I should see "Bruce Wayne" in the results
+    And I should see "Harry Potter" in the results
+
+Scenario: Search by email
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Email" to "sherlock.holmes@detectivemail.com"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Sherlock Holmes" in the results
+    And I should not see "Homer Simpson" in the results
+    And I should not see "Harry Potter" in the results
+
+Scenario: Search by phone number
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Phone Number" to "555-765-4321"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Homer Simpson" in the results
+    And I should not see "Sherlock Holmes" in the results
+
+Scenario: Search by address
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Address" to "Bag End, Hobbiton"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Frodo Baggins" in the results
+    And I should not see "Homer Simpson" in the results
+
+Scenario: Search by state
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I select "True" in the "State" dropdown
     And I press the "Search" button
     Then I should see the message "Success"
     And I should see "Sherlock Holmes" in the results
     And I should not see "Homer Simpson" in the results
     And I should see "Frodo Baggins" in the results
     And I should see "Bruce Wayne" in the results
-    And I should not see "Harry Potter" in the results
-
-Scenario: Search for customers
-    When I visit the "Home Page"
-    And I set the "Email" to "sherlock.holmes@detectivemail.com"
-    And I press the "Search" button
-    Then I should see the message "Success"
-    And I should see "Sherlock Holmes" in the results
-    And I should not see "Homer Simpson" in the results
     And I should not see "Harry Potter" in the results
