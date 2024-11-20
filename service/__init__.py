@@ -40,6 +40,8 @@ def create_app():
     # Turn off strict slashes because it violates best practices
     app.url_map.strict_slashes = False
 
+    # Initialize Plugins
+    # pylint: disable=import-outside-toplevel
     from service.models import db
 
     db.init_app(app)
