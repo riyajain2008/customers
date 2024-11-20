@@ -20,8 +20,12 @@ and SQL database
 """
 import sys
 from flask import Flask
+from flask_restx import Api
 from service import config
 from service.common import log_handlers
+
+# Will be initialize when app is created
+api = None  # pylint: disable=invalid-name
 
 
 ############################################################
@@ -33,19 +37,32 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
 
-    # Initialize Plugins
-    # pylint: disable=import-outside-toplevel
-    from service.models import db
-    db.init_app(app)
+    # Turn off strict slashes because it violates best practices
+    app.url_map.strict_slashes = False
+
+    ######################################################################
+    # Configure Swagger before initializing it
+    ######################################################################
+    global api
+    api = Api(
+        app,
+        version="1.0.0",
+        title="Customer Demo REST API Service",
+        description="This is a sample server for Customer.",
+        default="customers",
+        default_label="customers operations",
+        doc="/apidocs",  # default also could use doc='/apidocs/'
+        prefix="/api",
+    )
 
     with app.app_context():
         # Dependencies require we import the routes AFTER the Flask app is created
         # pylint: disable=wrong-import-position, wrong-import-order, unused-import
         from service import routes, models  # noqa: F401 E402
-        from service.common import error_handlers, cli_commands  # noqa: F401, E402
+        from service.common import error_handlers  # noqa: F401, E402
 
         try:
-            db.create_all()
+            models.Customer.init_db(app.config["CLOUDANT_DBNAME"])
         except Exception as error:  # pylint: disable=broad-except
             app.logger.critical("%s: Cannot continue", error)
             # gunicorn requires exit code 4 to stop spawning workers when they die
