@@ -29,7 +29,7 @@ from . import api
 
 
 ######################################################################
-# GET INDEX
+# Configure the Root route before OpenAPI
 ######################################################################
 @app.route("/")
 def index():
@@ -60,7 +60,7 @@ customer_model = api.inherit(
     "CustomerModel",
     create_model,
     {
-        "_id": fields.Integer(
+        "id": fields.Integer(
             readOnly=True, description="The unique id assigned internally by service"
         ),
     },
@@ -295,8 +295,3 @@ def abort(error_code: int, message: str):
     """Logs errors before aborting"""
     app.logger.error(message)
     api.abort(error_code, message)
-
-
-def data_reset():
-    """Removes all Customers from the database"""
-    Customer.remove_all()

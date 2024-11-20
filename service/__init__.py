@@ -40,6 +40,9 @@ def create_app():
     # Turn off strict slashes because it violates best practices
     app.url_map.strict_slashes = False
 
+    from service.models import db
+
+    db.init_app(app)
     ######################################################################
     # Configure Swagger before initializing it
     ######################################################################
@@ -59,10 +62,10 @@ def create_app():
         # Dependencies require we import the routes AFTER the Flask app is created
         # pylint: disable=wrong-import-position, wrong-import-order, unused-import
         from service import routes, models  # noqa: F401 E402
-        from service.common import error_handlers  # noqa: F401, E402
+        from service.common import error_handlers, cli_commands  # noqa: F401, E402
 
         try:
-            models.Customer.init_db(app.config["CLOUDANT_DBNAME"])
+            db.create_all()
         except Exception as error:  # pylint: disable=broad-except
             app.logger.critical("%s: Cannot continue", error)
             # gunicorn requires exit code 4 to stop spawning workers when they die
