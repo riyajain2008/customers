@@ -152,3 +152,24 @@ Scenario: Delete a Customer
     And I paste the "Id" field
     And I press the "Retrieve" button
     Then I should see the message "404 Not Found"
+
+# DELETE
+Scenario: Suspend a Customer
+    When I visit the "Home Page"
+    And I set the "Name" to "Sherlock Holmes"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "sherlock.holmes@detectivemail.com" in the "Email" field
+    And I should see "555-123-4567" in the "Phone Number" field
+    And I should see "221B Baker Street" in the "Address" field
+    And I should see "True" in the "State" dropdown
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "SUSPEND" button
+    Then I should see the message "Success"
+    When I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "False" in the "State" dropdown
