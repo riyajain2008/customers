@@ -307,12 +307,6 @@ def abort(error_code: int, message: str):
     """Logs errors before aborting"""
     app.logger.error(message)
     api.abort(error_code, message)
-=======
-    app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
-    abort(
-        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-        f"Content-Type must be {content_type}",
-    )
 
 ######################################################################
 # HEALTH CHECK
