@@ -22,6 +22,7 @@ and Delete Customer
 """
 
 from flask import current_app as app  # Import Flask application
+from flask import jsonify
 from flask_restx import Api, Resource, fields, reqparse, inputs
 from service.models import Customer
 from service.common import status  # HTTP Status Codes
@@ -308,3 +309,12 @@ def abort(error_code: int, message: str):
     """Logs errors before aborting"""
     app.logger.error(message)
     api.abort(error_code, message)
+
+
+######################################################################
+# HEALTH CHECK
+######################################################################
+@app.route("/health")
+def health_check():
+    """Let them know our heart is still beating"""
+    return jsonify(status=200, message="Healthy"), status.HTTP_200_OK
