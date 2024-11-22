@@ -44,6 +44,47 @@ Scenario: Create a Customer
 
 Scenario: List all customers
     When I visit the "Home Page"
+    And I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Sherlock Holmes" in the results
+    And I should see "Homer Simpson" in the results
+    And I should see "Frodo Baggins" in the results
+    And I should see "Bruce Wayne" in the results
+    And I should see "Harry Potter" in the results
+
+Scenario: Search by email
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Email" to "sherlock.holmes@detectivemail.com"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Sherlock Holmes" in the results
+    And I should not see "Homer Simpson" in the results
+    And I should not see "Harry Potter" in the results
+
+Scenario: Search by phone number
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Phone Number" to "555-765-4321"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Homer Simpson" in the results
+    And I should not see "Sherlock Holmes" in the results
+
+Scenario: Search by address
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Address" to "Bag End, Hobbiton"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Frodo Baggins" in the results
+    And I should not see "Homer Simpson" in the results
+
+Scenario: Search by state
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I select "True" in the "State" dropdown
     And I press the "Search" button
     Then I should see the message "Success"
     And I should see "Sherlock Holmes" in the results
@@ -52,11 +93,83 @@ Scenario: List all customers
     And I should see "Bruce Wayne" in the results
     And I should not see "Harry Potter" in the results
 
-Scenario: Search for customers
+# READ
+Scenario: Read a Customer
     When I visit the "Home Page"
-    And I set the "Email" to "sherlock.holmes@detectivemail.com"
+    And I set the "Name" to "Sherlock Holmes"
     And I press the "Search" button
     Then I should see the message "Success"
-    And I should see "Sherlock Holmes" in the results
-    And I should not see "Homer Simpson" in the results
-    And I should not see "Harry Potter" in the results
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "Sherlock Holmes" in the "Name" field
+    And I should see "sherlock.holmes@detectivemail.com" in the "Email" field
+    And I should see "555-123-4567" in the "Phone Number" field
+    And I should see "221B Baker Street" in the "Address" field
+    And I should see "True" in the "State" dropdown
+
+# UPDATE
+Scenario: Update a Customer
+    When I visit the "Home Page"
+    And I set the "Name" to "Sherlock Holmes"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "sherlock.holmes@detectivemail.com" in the "Email" field
+    And I should see "555-123-4567" in the "Phone Number" field
+    And I should see "221B Baker Street" in the "Address" field
+    When I change "Name" to "Loki"
+    And I press the "Update" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "Loki" in the "Name" field
+    When I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Loki" in the results
+    And I should not see "Sherlock Holmes" in the results
+
+# DELETE
+Scenario: Delete a Customer
+    When I visit the "Home Page"
+    And I set the "Name" to "Sherlock Holmes"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "sherlock.holmes@detectivemail.com" in the "Email" field
+    And I should see "555-123-4567" in the "Phone Number" field
+    And I should see "221B Baker Street" in the "Address" field
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "DELETE" button
+    Then I should see the message "Customer has been Deleted!"
+    When I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "404 Not Found"
+
+# DELETE
+Scenario: Suspend a Customer
+    When I visit the "Home Page"
+    And I set the "Name" to "Sherlock Holmes"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "sherlock.holmes@detectivemail.com" in the "Email" field
+    And I should see "555-123-4567" in the "Phone Number" field
+    And I should see "221B Baker Street" in the "Address" field
+    And I should see "True" in the "State" dropdown
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "SUSPEND" button
+    Then I should see the message "Success"
+    When I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "False" in the "State" dropdown

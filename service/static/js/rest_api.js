@@ -171,6 +171,32 @@ $(function () {
         });
     });
 
+    $("#suspend-btn").click(function () {
+
+        let customer_id = $("#customer_id").val();
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "PUT",
+            url: `/customers/${customer_id}/state`,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function(res){
+            //alert(res.toSource())
+            update_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            clear_form_data()
+            flash_message("http status:"+res.status)
+        });
+
+    });
+
     // ****************************************
     // Clear the form
     // ****************************************

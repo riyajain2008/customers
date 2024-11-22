@@ -304,13 +304,15 @@ class SuspendResource(Resource):
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
-
 def abort(error_code: int, message: str):
     """Logs errors before aborting"""
     app.logger.error(message)
     api.abort(error_code, message)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2d3299e591d2e74f68665eca283d297414ece198
 ######################################################################
 # HEALTH CHECK
 ######################################################################
