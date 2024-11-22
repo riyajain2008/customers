@@ -22,10 +22,23 @@ and Delete Customer
 """
 
 from flask import current_app as app  # Import Flask application
-from flask_restx import Resource, fields, reqparse, inputs
+from flask_restx import Api, Resource, fields, reqparse, inputs
 from service.models import Customer
 from service.common import status  # HTTP Status Codes
-from . import api
+
+######################################################################
+# Configure Swagger before initializing it
+######################################################################
+api = Api(
+    app,
+    version="1.0.0",
+    title="Customer Demo REST API Service",
+    description="This is a sample server for Customer.",
+    default="customers",
+    default_label="customers operations",
+    doc="/apidocs",  # default also could use doc='/apidocs/'
+    prefix="/api",
+)
 
 
 ######################################################################

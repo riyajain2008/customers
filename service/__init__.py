@@ -20,7 +20,6 @@ and SQL database
 """
 import sys
 from flask import Flask
-from flask_restx import Api
 from service import config
 from service.common import log_handlers
 
@@ -45,26 +44,15 @@ def create_app():
     from service.models import db
 
     db.init_app(app)
-    ######################################################################
-    # Configure Swagger before initializing it
-    ######################################################################
-    global api
-    api = Api(
-        app,
-        version="1.0.0",
-        title="Customer Demo REST API Service",
-        description="This is a sample server for Customer.",
-        default="customers",
-        default_label="customers operations",
-        doc="/apidocs",  # default also could use doc='/apidocs/'
-        prefix="/api",
-    )
 
     with app.app_context():
         # Dependencies require we import the routes AFTER the Flask app is created
         # pylint: disable=wrong-import-position, wrong-import-order, unused-import
         from service import routes, models  # noqa: F401 E402
-        from service.common import error_handlers, cli_commands  # noqa: F401, E402
+        from service.common import (
+            error_handlers,
+            cli_commands,
+        )  # pylint: disable=unused-import
 
         try:
             db.create_all()
