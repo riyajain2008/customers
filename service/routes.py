@@ -303,8 +303,21 @@ class SuspendResource(Resource):
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
-
 def abort(error_code: int, message: str):
     """Logs errors before aborting"""
     app.logger.error(message)
     api.abort(error_code, message)
+=======
+    app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
+    abort(
+        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+        f"Content-Type must be {content_type}",
+    )
+
+######################################################################
+# HEALTH CHECK
+######################################################################
+@app.route("/health")
+def health_check():
+    """Let them know our heart is still beating"""
+    return jsonify(status=200, message="Healthy"), status.HTTP_200_OK
