@@ -303,6 +303,27 @@ class TestSadPaths(TestCase):
         response = self.client.delete(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
+
+class TestErrorHandlers(TestCustomerService):
+    """Test Error Handlers"""
+
+    @patch("service.routes.app.logger.warning")
+    def test_404_error_handler(self, mock_logger_warning):
+        """It should handle 404 Not Found error"""
+        # Trigger a 404 error
+        response = self.client.get("/nonexistent-route")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        data = response.get_json()
+        self.assertEqual(data["status"], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(data["error"], "Not Found")
+        self.assertIn("404", data["message"])  # Check if "404" is in the error message
+
+        # Verify the logger warning was called
+        mock_logger_warning.assert_called_once()
+        args, _ = mock_logger_warning.call_args
+        self.assertIn("404", args[0])  # Ensure the log contains "404"
+
     ######################################################################
     #  T E S T   M O C K S
     ######################################################################
