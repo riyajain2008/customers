@@ -142,7 +142,7 @@ class Customer(db.Model):
             name (string): the name of the Customers you want to match
         """
         logger.info("Processing name query for %s ...", name)
-        return cls.query.filter(cls.name == name)
+        return cls.query.filter(cls.name == name).all()
 
     @classmethod
     def find_by_email(cls, email):
@@ -152,7 +152,7 @@ class Customer(db.Model):
             email (string): the email of the Customers you want to match
         """
         logger.info("Processing email query for %s ...", email)
-        return cls.query.filter(cls.email == email)
+        return cls.query.filter(cls.email == email).all()
 
     @classmethod
     def find_by_phone_number(cls, phone_number):
@@ -162,7 +162,7 @@ class Customer(db.Model):
             phone_number (string): the phone_number of the Customers you want to match
         """
         logger.info("Processing phone_number query for %s ...", phone_number)
-        return cls.query.filter(cls.phone_number == phone_number)
+        return cls.query.filter(cls.phone_number == phone_number).all()
 
     @classmethod
     def find_by_address(cls, address):
@@ -172,7 +172,7 @@ class Customer(db.Model):
             address (string): the address of the Customers you want to match
         """
         logger.info("Processing address query for %s ...", address)
-        return cls.query.filter(cls.address == address)
+        return cls.query.filter(cls.address == address).all()
 
     @classmethod
     def find_by_state(cls, state: bool = True) -> list:
@@ -188,4 +188,4 @@ class Customer(db.Model):
         if not isinstance(state, bool):
             raise TypeError("Invalid availability, must be of type boolean")
         logger.info("Processing available query for %s ...", state)
-        return cls.query.filter(cls.state == state)
+        return cls.query.filter(cls.state == state).all()

@@ -148,7 +148,7 @@ class CustomerResource(Resource):
         if not customer:
             abort(
                 status.HTTP_404_NOT_FOUND,
-                f"Customer with id '{customer_id}' was not found.",
+                "Customer not found.",
             )
         return customer.serialize(), status.HTTP_200_OK
 
@@ -184,6 +184,7 @@ class CustomerResource(Resource):
     # DELETE A CUSTOMER
     # ------------------------------------------------------------------
     @api.doc("delete_customers")
+    @api.response(404, "Customer not found")
     @api.response(204, "Customer deleted")
     def delete(self, customer_id):
         """
@@ -193,10 +194,12 @@ class CustomerResource(Resource):
         """
         app.logger.info("Request to Delete a customer with id [%s]", customer_id)
         customer = Customer.find(customer_id)
-        if customer:
-            customer.delete()
-            app.logger.info("Customer with id [%s] was deleted", customer_id)
+        if not customer:
+            app.logger.info("Customer not found", customer_id)
+            return {"message": "Customer not found"}, status.HTTP_404_NOT_FOUND
 
+        customer.delete()
+        app.logger.info("Customer with id [%s] was deleted", customer_id)
         return "", status.HTTP_204_NO_CONTENT
 
 
