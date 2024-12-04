@@ -57,7 +57,7 @@ $(function () {
         
         let ajax = $.ajax({
             type: "POST",
-            url: "/customers",
+            url: "/api/customers",
             contentType: "application/json",
             data: JSON.stringify(data),
         });
@@ -98,7 +98,7 @@ $(function () {
 
         let ajax = $.ajax({
                 type: "PUT",
-                url: `/customers/${customer_id}`,
+                url: `/api/customers/${customer_id}`,
                 contentType: "application/json",
                 data: JSON.stringify(data)
             })
@@ -126,7 +126,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/customers/${customer_id}`,
+            url: `/api/customers/${customer_id}`,
             contentType: "application/json",
             data: ''
         })
@@ -156,7 +156,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "DELETE",
-            url: `/customers/${customer_id}`,
+            url: `/api/customers/${customer_id}`,
             contentType: "application/json",
             data: '',
         })
@@ -167,7 +167,15 @@ $(function () {
         });
 
         ajax.fail(function(res){
-            flash_message("Server error!")
+            if (res.status === 404) {
+                flash_message("Customer not found!");
+            }
+            else if (res.status === 500) {
+                flash_message("Internal Server Error!");
+            }
+            else {
+                flash_message("An unexpected error occurred!");
+            }
         });
     });
 
@@ -179,7 +187,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "PUT",
-            url: `/customers/${customer_id}/state`,
+            url: `/api/customers/${customer_id}/suspend`,
             contentType: "application/json",
             data: ''
         })
@@ -258,7 +266,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/customers?${queryString}`,
+            url: `/api/customers?${queryString}`,
             contentType: "application/json",
             data: ''
         })

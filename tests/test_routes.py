@@ -32,7 +32,7 @@ DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
 )
 
-BASE_URL = "/customers"
+BASE_URL = "/api/customers"
 
 
 ######################################################################
@@ -156,7 +156,7 @@ class TestCustomerService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         data = response.get_json()
         logging.debug("Response data = %s", data)
-        self.assertIn("was not found", data["message"])
+        self.assertIn("Customer not found", data["message"])
 
     # ----------------------------------------------------------
     # TEST UPDATE
@@ -184,6 +184,26 @@ class TestCustomerService(TestCase):
         self.assertEqual(updated_customer["phone_number"], "123-456-7890")
         self.assertEqual(updated_customer["address"], "123 Updated Address")
 
+    def test_update_nonexistent_customer(self):
+        """It should return 404 when updating a non-existent Customer"""
+        nonexistent_customer_id = 99999
+        update_data = {
+            "name": "Nonexistent Customer",
+            "email": "nonexistent@example.com",
+            "phone_number": "123-456-7890",
+            "address": "123 Updated Address",
+            "state": True,
+        }
+        response = self.client.put(
+            f"{BASE_URL}/{nonexistent_customer_id}", json=update_data
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        self.assertIn(
+            f"Customer with id '{nonexistent_customer_id}' was not found.",
+            data["message"],
+        )
+
     # ----------------------------------------------------------
     # TEST DELETE
     # ----------------------------------------------------------
@@ -200,8 +220,10 @@ class TestCustomerService(TestCase):
     def test_delete_non_existing_customer(self):
         """It should return 404 when trying to delete a non-existing customer"""
         response = self.client.delete(f"{BASE_URL}/0")
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        self.assertIn("message", data)
+        self.assertEqual(data["message"], "Customer not found")
 
     # ----------------------------------------------------------
     # TEST ACTIONS
@@ -211,7 +233,7 @@ class TestCustomerService(TestCase):
         customers = self._create_customers(10)
         valid_customers = [customer for customer in customers if customer.state is True]
         customer = valid_customers[0]
-        response = self.client.put(f"{BASE_URL}/{customer.id}/state")
+        response = self.client.put(f"{BASE_URL}/{customer.id}/suspend")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = self.client.get(f"{BASE_URL}/{customer.id}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -219,14 +241,25 @@ class TestCustomerService(TestCase):
         logging.debug("Response data: %s", data)
         self.assertEqual(data["state"], False)
 
-    def test_purchase_not_valid(self):
-        """It should not Purchase a Customer that is not available"""
+    def test_suspend_nonexistent_customer(self):
+        """It should return 404 when suspending a non-existent Customer"""
+        nonexistent_customer_id = 99999
+        response = self.client.put(f"{BASE_URL}/{nonexistent_customer_id}/suspend")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        self.assertIn(
+            f"Customer with id [{nonexistent_customer_id}] was not found.",
+            data["message"],
+        )
+
+    def test_suspend_not_valid(self):
+        """It should not Suspend a Customer that is invalid"""
         customers = self._create_customers(10)
         invalid_customers = [
             customer for customer in customers if customer.state is False
         ]
         customer = invalid_customers[0]
-        response = self.client.put(f"{BASE_URL}/{customer.id}/state")
+        response = self.client.put(f"{BASE_URL}/{customer.id}/suspend")
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
 
@@ -271,6 +304,27 @@ class TestSadPaths(TestCase):
         """It should not allow deletion without a customer id"""
         response = self.client.delete(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class TestErrorHandlers(TestCustomerService):
+    """Test Error Handlers"""
+
+    @patch("service.routes.app.logger.warning")
+    def test_404_error_handler(self, mock_logger_warning):
+        """It should handle 404 Not Found error"""
+        # Trigger a 404 error
+        response = self.client.get("/nonexistent-route")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        data = response.get_json()
+        self.assertEqual(data["status"], status.HTTP_404_NOT_FOUND)
+        self.assertEqual(data["error"], "Not Found")
+        self.assertIn("404", data["message"])  # Check if "404" is in the error message
+
+        # Verify the logger warning was called
+        mock_logger_warning.assert_called_once()
+        args, _ = mock_logger_warning.call_args
+        self.assertIn("404", args[0])  # Ensure the log contains "404"
 
     ######################################################################
     #  T E S T   M O C K S

@@ -295,7 +295,8 @@ class TestModelQueries(TestCaseBase):
         email = customers[0].email
         count = len([customer for customer in customers if customer.email == email])
         found = Customer.find_by_email(email)
-        self.assertEqual(found.count(), count)
+        self.assertIsInstance(found, list)
+        self.assertEqual(len(found), count)
         for customer in found:
             self.assertEqual(customer.email, email)
 
@@ -307,7 +308,8 @@ class TestModelQueries(TestCaseBase):
         name = customers[0].name
         count = len([customer for customer in customers if customer.name == name])
         found = Customer.find_by_name(name)
-        self.assertEqual(found.count(), count)
+        self.assertIsInstance(found, list)
+        self.assertEqual(len(found), count)
         for customer in found:
             self.assertEqual(customer.name, name)
 
@@ -325,7 +327,8 @@ class TestModelQueries(TestCaseBase):
             ]
         )
         found = Customer.find_by_phone_number(phone_number)
-        self.assertEqual(found.count(), count)
+        self.assertIsInstance(found, list)
+        self.assertEqual(len(found), count)
         for customer in found:
             self.assertEqual(customer.phone_number, phone_number)
 
@@ -337,7 +340,8 @@ class TestModelQueries(TestCaseBase):
         address = customers[0].address
         count = len([customer for customer in customers if customer.address == address])
         found = Customer.find_by_address(address)
-        self.assertEqual(found.count(), count)
+        self.assertIsInstance(found, list)
+        self.assertEqual(len(found), count)
         for customer in found:
             self.assertEqual(customer.address, address)
 
@@ -349,6 +353,7 @@ class TestModelQueries(TestCaseBase):
         state = customers[0].state
         count = len([customer for customer in customers if customer.state == state])
         found = Customer.find_by_state(state)
-        self.assertEqual(found.count(), count)
+        self.assertIsInstance(found, list)
+        self.assertEqual(len(found), count)
         for customer in found:
             self.assertEqual(customer.state, state)
