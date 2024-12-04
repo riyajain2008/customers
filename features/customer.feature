@@ -151,7 +151,7 @@ Scenario: Delete a Customer
     When I press the "Clear" button
     And I paste the "Id" field
     And I press the "Retrieve" button
-    Then I should see the message "404 Not Found"
+    Then I should see the message "Customer not found"
 
 # DELETE
 Scenario: Suspend a Customer
